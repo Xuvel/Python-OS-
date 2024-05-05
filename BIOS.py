@@ -1,4 +1,4 @@
-#git-ver-1.2-alpha-test1
+#git-ver-1.2-alpha-test2
 
 import os
 import time
