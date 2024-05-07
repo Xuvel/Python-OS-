@@ -2,8 +2,10 @@ import os
 import time
 import subprocess
 
+import System
+
 def mainDir():
-	return os.getcwd()
+	return ""
 
 if (os.name == "nt"):
 	
@@ -32,33 +34,27 @@ def loading(times, text, wait):
 		clear()
 
 def check(command):
+	
 	global stop
-	match command:
-		case "help":
-			print("help-\nstop-\nstart-\noutput-\nsystem(X)-")
+
+	print(command[7:15])
+
+	if (command == "stop"):
+		stop = True
+
+	if (len(command) >= 2):
+		if (command[:2] == "do"):
 			
-		case "stop":
-			stop = True
-			print("stop")
-			global error_level
-			error_level = 0x00001
-		case "":
-			print(f"Command for help using \"help\"")
-		case "system(z)":
-			stop = True
-			error_level = 0x00002
-		case "error list":
-			print("0x00001 - user exit\n0x00002 - unknown error")
-		case "start":
-			subprocess.call(["python", "newfile.py"])
-		case _:
-			if (command[:6] == "output"):
-				if (len(command) > 7):
-					print(command[7:])
-				else:
-					print("syntax error", end = "")
-			else:
-				print(f"Unknown command \"{command}\"")
+			if (command[3:7] == "get-"):
+
+				if (command[7:19] == "-currentVer"):
+					print(System.get_last_version())
+				elif (command[7:15] == "-os_ver"):
+					print(System.get_ver())
+				elif (command[7:16] == "-os_name"):
+					print(System.get_name())
+
+
 
 print(f"Triple A DOS {version}")		
 def main():
@@ -72,4 +68,3 @@ def main():
 	return error_level
 	
 print(f"Program finished with exit code {hex(main())}")
-	
