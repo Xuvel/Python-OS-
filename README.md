@@ -1,4 +1,11 @@
 # Python-OS
+
+en:
+
+modifiable imitation of "OS" with open source,
+written on python,
+for have some fun ᗜ^ᗜ
+
 **ОС на Python**
 
 Включает в себя две части:
