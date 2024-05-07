@@ -2,8 +2,8 @@
 
 en:
 
-modifiable imitation of "OS" with open source,
-written on python,
+modifiable imitation of "OS" with open source, 
+written on python, 
 for have some fun ᗜ^ᗜ
 
 **ОС на Python**
