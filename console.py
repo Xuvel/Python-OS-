@@ -18,21 +18,6 @@ stop = False
 user_input = ""
 error_level = 0x00000
 
-def loading(times, text, wait):
-	for i in range(times):
-		print(f"loading [|]{text}")
-		time.sleep(wait)
-		clear()
-		print(f"loading [/]{text}")
-		time.sleep(wait)
-		clear()
-		print(f"loading [-]{text}")
-		time.sleep(wait)
-		clear()
-		print(f"loading [\\]{text}")
-		time.sleep(wait)
-		clear()
-
 def check(command):
 	
 	global stop
@@ -59,7 +44,6 @@ def check(command):
 print(f"Triple A DOS {version}")		
 def main():
 	time.sleep(0)
-	loading(4, "", 0)
 	print("Triple A OS console")
 	while (stop == False):
 		print(">>", end = "")
