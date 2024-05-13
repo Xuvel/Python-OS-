@@ -18,6 +18,21 @@ isRunning = True
 user_input = ""
 error_level = 0x0
 
+def loading(times, text, wait):
+	for i in range(times):
+		print(f"loading [|]{text}")
+		time.sleep(wait)
+		clear()
+		print(f"loading [/]{text}")
+		time.sleep(wait)
+		clear()
+		print(f"loading [-]{text}")
+		time.sleep(wait)
+		clear()
+		print(f"loading [\\]{text}")
+		time.sleep(wait)
+		clear()
+
 def check(command):
 	
 	global isRunning
@@ -50,12 +65,8 @@ def check(command):
 						permissions = input("type a type of permission (ADM or USER): ")
 						if (permissions == "ADM" or permissions == "USER"):
 							password = input("type a password: ")
-							if (password != ""):
-								return None
-								# eval(name) = System.User.createUser(name, permissions, password)
-							else:
-								return None
-								# newUser = System.User.createUser(name, permissions)
+							newUser = System.User.createUser(name, permissions, password)
+							System.users.append(newUser)
 						else:
 							print("incorrect permission type")
 					else:
@@ -68,14 +79,30 @@ def check(command):
 
 
 
-print(f"Triple A DOS {version}")		
+print(f"Triple A DOS {version}")
 def main():
 	time.sleep(0)
+	loading(4, "", 0)
 	print("Triple A OS console")
-	while (isRunning):
-		print(f"{mainDir()} $ ", end = "")
-		user_input = input()
-		check(user_input)
-	return error_level
+
+	userName = input("Enter username")
+	password = input("Enter password")
+
+	if (System.users.count != 0):
+		System.User.createUser(userName, "ADM", password)
+	elif (userName in System.users):
+		
+		if (System.users[System.users.find(userName)].getPassword() == password):
+
+
+			while (isRunning):
+				print(f"{mainDir()} $ ", end = "")
+				user_input = input()
+				check(user_input)
+			return error_level
+		else:
+			return 0x1
+	else:
+		return 0x2
 	
 print(f"Program finished with exit code {hex(main())}")
