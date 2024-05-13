@@ -6,16 +6,23 @@ def newPath(afterPath):
     return os.getcwd() + afterPath
 
 def firstStartUp():
-    if os.path.isdir(newPath("\config")):
-        if os.path.isfile(newPath("\config\\bios.txt")):
-            pass
-        else:
-            print("Файл конфигурации отсутствует, автоматическое создание.")
-            open(newPath("\config\\bios.txt"), "w")
-    else:
+    if not os.path.isdir(newPath("\config")):
         print("Система запускается в первый раз, создание файла конфгурации.")
-        os.mkdir("config")
-        open(newPath("\config\\bios.txt"), "w")
+        os.mkdir(newPath("\config"))
+        if not os.path.isfile(newPath("\config\\bios.txt")):
+            print("Файл конфигурации отсутствует, автоматическое создание.")
+        open(newPath("\config\\bios.txt"), "w")      
+
+    #if os.path.isdir(newPath("\config")):
+    #    if os.path.isfile(newPath("\config\\bios.txt")):
+    #        pass
+    #    else:
+    #        print("Файл конфигурации отсутствует, автоматическое создание.")
+    #        open(newPath("\config\\bios.txt"), "w")
+    #else:
+    #    print("Система запускается в первый раз, создание файла конфгурации.")
+    #    os.mkdir("config")
+    #    open(newPath("\config\\bios.txt"), "w")
 
 class BIOS:
     def __init__(self, workDisks):
