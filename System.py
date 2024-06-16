@@ -1,7 +1,8 @@
 import urllib.request
-url = 'https://raw.githubusercontent.com/Xuvel/Python-OS-/main/OS_VERSION.txt'
 
-null = "null"
+url            = 'https://raw.githubusercontent.com/Xuvel/Python-OS-/main/OS_VERSION.txt'
+
+null           = "null"
 
 github_verfile = "OS_VERSION.txt"
 
@@ -80,7 +81,7 @@ def getLastVersion() -> str:
         fileContent = file.read()
         return fileContent
     except:
-        return null
+        return None
 
 def getOs() -> str:
     try:

@@ -21,6 +21,6 @@ def main():
             return 0x3
 error_level = main()
 
-prtin("py os is installed") if (error_level == 0x0) else print("installing") if (error_level == 0x1) else print("directory cannot be created") if (error_level == 0x2) else print("file cannot be created/downloaded") if (error_level == 0x3) else print("os cannot be install")
+print("py os is installed") if (error_level == 0x0) else print("installing") if (error_level == 0x1) else print("directory cannot be created") if (error_level == 0x2) else print("file cannot be created/downloaded") if (error_level == 0x3) else print("os cannot be install")
 
 print(f"error {error_level}")
