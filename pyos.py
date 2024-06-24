@@ -2,6 +2,8 @@ import time
 import os
 from sys import platform
 
+import System
+
 global error_level, working
 error_level = 0x0
 working = True
@@ -28,18 +30,6 @@ def getOSType():
         working = False
         error_level = hex(3)
         return False
-
-class System:
-    def __init__(self, typew):
-        self.typew = typew
-
-    def getType(self):
-        return self.typew
-        
-    def isInstalled(self):
-    	if (os.path.isdir(f"{mainDir()}/System")):
-    		return True
-
 
 def main():
 	global error_level

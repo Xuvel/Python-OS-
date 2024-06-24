@@ -8,6 +8,7 @@ github_verfile = "OS_VERSION.txt"
 
 systemVer      = "0.0.1"
 systemName     = "AAA Python OS"
+maxCums        = 5
 
 users = []
 

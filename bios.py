@@ -1,6 +1,5 @@
 import os
 import time
-import random 
 
 def newPath(afterPath):
     return os.getcwd() + afterPath
