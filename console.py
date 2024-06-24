@@ -80,29 +80,34 @@ def check(command):
 
 
 print(f"Triple A DOS {version}")
+# def main():
+	#time.sleep(0)
+	#loading(4, "", 0)
+	#print("Triple A OS console")
+	#userName = input("Enter username ")
+	#password = input("Enter password ")
+    #if (System.users.count != 0):
+	#	System.User.createUser(userName, "ADM", password)
+	#elif (userName in System.users):
+	#	
+	#	if (System.users[System.users.find(userName)].getPassword() == password):
+
+	#		while (isRunning):
+	#			print(f"{mainDir()} $ ", end = "")
+	#			user_input = input()
+	#			check(user_input)
+	#		return error_level
+	#	else:
+	#		return 0x1
+	#else:
+	#	return 0x2
+	
 def main():
-	time.sleep(0)
-	loading(4, "", 0)
-	print("Triple A OS console")
-
-	userName = input("Enter username")
-	password = input("Enter password")
-
-	if (System.users.count != 0):
-		System.User.createUser(userName, "ADM", password)
-	elif (userName in System.users):
-		
-		if (System.users[System.users.find(userName)].getPassword() == password):
-
-
-			while (isRunning):
-				print(f"{mainDir()} $ ", end = "")
-				user_input = input()
-				check(user_input)
-			return error_level
-		else:
-			return 0x1
-	else:
-		return 0x2
+	while (isRunning):
+		print(f"{mainDir()} $ ", end = "")
+		user_input = input()
+		check(user_input)
+	return error_level
 	
 print(f"Program finished with exit code {hex(main())}")
+
