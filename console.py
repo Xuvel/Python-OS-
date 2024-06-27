@@ -2,6 +2,7 @@ import os
 import time
 import subprocess
 
+import apps.calculator
 import System
 
 def mainDir():
@@ -21,7 +22,7 @@ cum_times = 0
 
 history = []
 
-def s(command): # блять повесся нахуй с своими ебанными НАЗВАНИЯМИ БЛЯТЬ ИДИ НАХУЙ ЧМОШН ИК ЕБАННЫЙ АААААААААААААААААААААААААААААААААААААААААААААААААААААААААААВРДЖПОЬЬЬЬЬЬЬЬЦКрЖЭЬ
+def s(command): # блять повесся нахуй с СВОими ебанными НАЗВАНИЯМИ БЛЯТЬ ИДИ НАХУЙ ЧМОШН ИК ЕБАННЫЙ АААААААААААААААААААААААААААААААААААААААААААААААААААААААААААВРДЖПОЬЬЬЬЬЬЬЬЦКрЖЭЬ
 	history.append(command)
 	match command:
 		case "help":
