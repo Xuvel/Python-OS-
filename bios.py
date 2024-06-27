@@ -20,6 +20,7 @@ def firstStartUp(): # Проверка существования папки con
 class BIOS:
     def __init__(self, workDisks):
         self.workDisks = workDisks
+        self.disabledDisks = []
         self.pointedDisk = 'Пусто'
         self.needStartBios = 'Пусто'
         self.local = {'F': 'Нет', "T": 'Да'}
@@ -42,40 +43,43 @@ class BIOS:
                 print("Загрузочный диск не выбран или не найден")
                 self.settings()
 
-    def settings(self): # Выведение информации настроек и переход к изменению настроек (save_settings)
+    def settings(self): # Выведение информации настроек и переход к изменению настроек (save_settings) и управлению дисками (disks_settings)
         while True:
             print("======== Настройки BIOS ========")
-            print('  Настройка  |  Диски  |  Выход ')
+            print('  Диски  |  Настройка  |  Выход ')
             print()
             print(f"Принудительное включение BIOS: {self.local[self.needBios()]}")
             print(f"Диск для запуска ОС: {self.pointedDisk}")
             action = ''
             print('--------------------------------')
             while action not in ['1', '2', '3']: # Выбор раздела настроек
-                print('Для переключения между разделами введите номер раздела')
-                action = input("Введите номер раздела: ").upper()
+                print('Для переключения между разделами настроек введите номер раздела')
+                action = input("Введите номер раздела настроек: ").upper()
                 if action == '1':
-                    self.save_settings()
+                    self.disks_settings()
                 
-                if action == '2':
+                elif action == '2':
+                    self.save_settings()
+
+                elif action == '3':
                     return None
 
     def save_settings(self): # Режим изменения настроек. Сохраняет изменения в файл bios.txt
-        print('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')
-        print(f"1) Принудительное включение BIOS: {self.local[self.needBios()]}")
-        print(f"2) Диск для запуска ОС: {self.pointedDisk}")
-        print('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')
-        print("Для выхода из режима настройки введите \"Выход\"")
         while True:
+            print('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')
+            print(f"1) Принудительное включение BIOS: {self.local[self.needBios()]}")
+            print(f"2) Диск для запуска ОС: {self.pointedDisk}")
+            print('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')
+            print("Для выхода из режима настройки введите \"Выход[в]/exit[e]\"")
             action = input("Выберите номер настройки: ")
-            if action.upper() == 'ВЫХОД':
+            if action.upper() in ["ВЫХОД", "В", "EXIT", "E"]:
                 print("Выход из настроек.")
                 print('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')
                 break
             elif action == '1': # Настройка №1. Принудительное включение BIOS.
                 action = ''
-                while action != 'ДА' and action != 'НЕТ':
-                    action = input("Переключить значение? ").upper()
+                while action.upper() not in ['ДА', 'Д', 'НЕТ', 'НЕ', 'Н', 'Y', 'N']:
+                    action = input("Переключить значение? \"да[д]/нет[н]\"")
 
                 if action == 'ДА':
                     with open(newPath("\config\\bios.txt"), "r+") as save_settings:
@@ -93,18 +97,18 @@ class BIOS:
                     print("Отмена действия")
 
             elif action == '2': # Настройка №2. Выбор диска для запуска ОС
-                if len(workDisks) != 0:
+                if len(self.workDisks) != 0:
                     print("Подключенные диски:")
-                    for i in range(len(workDisks)):
-                        print(f'{i + 1}) {workDisks[i]}')
+                    for i in range(len(self.workDisks)):
+                        print(f'{i + 1}) {self.workDisks[i]}')
                     action = '0'
                     while action not in [str(i) for i in range(1, len(self.workDisks) + 1)]:
-                        if action.isdigit() == False:
-                            action = input("Введите ЧИСЛО: ").upper()
+                        if action.upper() in ['ВЫХОД', 'В']:
+                            return None
                         else:
                             action = input("Введите номер диска для загрузки ОС: ").upper()
 
-                    self.pointedDisk = workDisks[int(action) - 1]
+                    self.pointedDisk = self.workDisks[int(action) - 1]
                     with open(newPath("\config\\bios.txt"), "r+") as save_settings:
                         save = save_settings.readlines()
                         save_settings.seek(0)
@@ -113,10 +117,54 @@ class BIOS:
                         save_settings.writelines(save)
 
                     print(f'Значение изменено на {self.pointedDisk}')
-
                 else:
                     print("Не найдено ни одного диска!")
 
+    def disks_settings(self):
+        pathToSystem = f'\disks\\'
+        while True:
+            print('--------------------------------')
+            print('ЭТА ФУНКЦИЯ ДЛЯ **РАЗРАБОТЧИКОВ**! В ОРИГИНАЛЕ ЭТОГО РАЗДЕЛА НЕ ДОЛЖНО БЫТЬ, Т.К. ЭТО НЕ РЕАЛИСТИЧНО!')
+            print('Все подключенные диски:')
+            if len(self.workDisks) == 0:
+                print('Ни одного диска не найдено!')
+            for i in range(len(self.workDisks)):
+                status = 'Занят' if os.path.isfile(newPath(f"\disks\{self.workDisks[i]}\os.txt")) else 'Пуст'
+                print(f'{i + 1}) {self.workDisks[i]}: {status}')
+            
+            print('------------------------------------------------')
+            print('| Создать диск | Отключить диск | Удалить диск |')
+            print('------------------------------------------------')
+            action = input('Выберите раздел: ').upper()
+            if action == '1':
+                action = input('Название диска: ')
+                real_name = action.replace(' ', '')
+                os.mkdir(newPath(pathToSystem + real_name))
+                with open(newPath(pathToSystem + real_name + '\\.efi'), "w") as efi:
+                    pass
+                print('Диск создан')
+            elif action == '2':
+                print('После отключения диска, он пропадет из списка выбора и заработает только после перезапуска Биоса')
+    
+                while action not in [str(i) for i in range(1, len(self.workDisks) + 1)]:
+                    action = input('Выберите диск: ')
+                self.disabledDisks.append(self.workDisks[int(action) - 1])
+                print('Диск отключен')
+            elif action == '3':
+                print('Работает только с правами администратора!')
+                action = ''
+                while action not in [str(i) for i in range(1, len(self.workDisks) + 1)]:
+                    action = input('Выберите диск: ')
+                try:
+                    os.remove(newPath(pathToSystem + self.workDisks[int(action) - 1]))
+                    print('Диск удален')
+                except PermissionError:
+                    print('Отказано в доступе. Запустите Биос через командную строку с правами администратора и повторите попытку.')
+            elif action in ['ВЫХОД', 'В']:
+                return None
+            self.workDisks = [i for i in scan_disks() if i not in self.disabledDisks]
+            print('--------------------------------')
+        
     def runOS(self): # Запуск ОС. Возвращает True или False
         pathToSystem = f'\disks\\{self.pointedDisk}\\'
         sys.path.insert(1, newPath(pathToSystem))
@@ -127,11 +175,14 @@ class BIOS:
                 checking = __import__(i[:-3], globals(), locals(), ['startUp'])
                 if 'startUp' not in dir(checking):
                     raise AttributeError
-            except (AttributeError) as e:
+            except AttributeError:
                 toDel.append(i)
         fileDir = [i for i in fileDir if i not in toDel]
 
-        if len(fileDir) > 1: # Выбор загрузчика, если их больше одного
+        if len(fileDir) == 0:
+            print('Ни одного диска не найдено!')
+            return True
+        elif len(fileDir) > 1: # Выбор загрузчика, если их больше одного
             print('На диске присутствует несколько файлов загрузки.')
             print('Для отмены введите "Выход"')
             for i in range(len(fileDir)):
@@ -145,7 +196,10 @@ class BIOS:
                 action = int(action) - 1
             else:
                 return True
-        
+        else:
+            action = 0
+
+        print(f'Запуск {fileDir[action][:-3]}')
         start = __import__(fileDir[action][:-3])
         start.startUp()
         return False
@@ -166,13 +220,15 @@ class BIOS:
             self.needStartBios = "F"
         return separateFile(self.needStartBios)
 
-workDisks = []     
-if os.path.isdir(newPath("\disks")): # Проверка существования папки disks и поиск дисков
-    disksDir = os.listdir(path=newPath("\disks"))
-    for i in range(len(disksDir)):
-        if os.path.isfile(os.getcwd() + f"\disks\{disksDir[i]}\.efi"):
-            workDisks.append(disksDir[i])
+def scan_disks():
+    workDisks = []     
+    if os.path.isdir(newPath("\disks")): # Проверка существования папки disks и поиск дисков
+        disksDir = os.listdir(path=newPath("\disks"))
+        for i in range(len(disksDir)):
+            if os.path.isfile(os.getcwd() + f"\disks\{disksDir[i]}\.efi"):
+                workDisks.append(disksDir[i])
+    return workDisks
 
 firstStartUp()
-bios = BIOS(workDisks)
+bios = BIOS(scan_disks())
 bios.preview()
