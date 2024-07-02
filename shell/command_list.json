@@ -1,0 +1,22 @@
+[
+    {
+        "name": "help",
+        "description": "Вывод списка доступных команд",
+        "action": "show_help()"
+    },
+    {
+        "name": "ls",
+        "description": "Вывод файлов в текущей директории",
+        "action": "from commands.ls import main; main()"
+    },
+    {
+        "name": "clear",
+        "description": "Очистка терминала",
+        "action": "clear_terminal()"
+    },
+    {
+        "name": "exit",
+        "description": "Выход из PyLite",
+        "action": "sys.exit(0)"
+    }
+]
