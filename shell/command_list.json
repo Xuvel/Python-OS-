@@ -6,8 +6,38 @@
     },
     {
         "name": "ls",
-        "description": "Вывод файлов в текущей директории",
-        "action": "from commands.ls import main; main()"
+        "args": "[directory]",
+        "description": "Вывод файлов в директории",
+        "action": "exec('from commands.ls import main; main(args)')"
+    },
+    {
+        "name": "cd",
+        "args": "[directory]",
+        "description": "Переход в директорию",
+        "action": "exec('from commands.cd import main; main(args)')"
+    },
+    {
+        "name": "cat",
+        "args": "[file]",
+        "description": "Вывод содержимого файла",
+        "action": "exec('from commands.cat import main; main(args)')"
+    },
+    {
+        "name": "touch",
+        "args": "[file]",
+        "description": "Создание файла в текущей директории",
+        "action": "exec('from commands.touch import main; main(args)')"
+    },
+    {
+        "name": "rm",
+        "args": "[file]",
+        "description": "Удаление файла",
+        "action": "exec('from commands.rm import main; main(args)')"
+    },
+    {
+        "name": "pwd",
+        "description": "Вывод текущей директории",
+        "action": "exec('from commands.pwd import main; main(args)')"
     },
     {
         "name": "clear",
@@ -16,7 +46,7 @@
     },
     {
         "name": "exit",
-        "description": "Выход из PyLite",
+        "description": "Выход из shell",
         "action": "sys.exit(0)"
     }
 ]
