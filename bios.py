@@ -1,8 +1,9 @@
 import os
 import time
 import sys
+import json
 
-def newPath(afterPath): # Возвращает текущий путь к файлу BIOS.py + путь в аргументах
+def newPath(afterPath): # Возвращает текущий путь к файлу bios.py + путь в аргументах
     return os.getcwd() + afterPath
 
 def separateFile(path):
@@ -11,14 +12,19 @@ def separateFile(path):
 def clearConsole():
     os.system('cls' if os.name == 'nt' else 'clear')
 
-def firstStartUp(): # Проверка существования папки config и файла bios.txt
+def firstStartUp(): # Проверка существования папки config и файла bios.json
     if not os.path.isdir(newPath("/config")):
         print("Система запускается в первый раз, создание файла конфгурации.")
         os.mkdir(newPath("/config"))
-    if not os.path.isfile(newPath("/config/bios.txt")):
+    if not os.path.isfile(newPath("/config/bios.json")):
         print("Файл конфигурации отсутствует, автоматическое создание.")
-        with open(newPath("/config/bios.txt"), "w") as new_file:
-            new_file.write('T\nNone')
+        with open(newPath("/config/bios.json"), "w", encoding="utf-8") as new_file:
+            json.dump(
+                {
+                    "bios_autostart": True,
+                    "startup_disk": None
+                }, new_file
+            )
     if not os.path.isdir(newPath("/disks")):
         os.mkdir(newPath("/disks"))
 
@@ -26,11 +32,14 @@ class BIOS:
     def __init__(self, workDisks):
         self.workDisks = workDisks
         self.disabledDisks = []
-        self.pointedDisk = 'Пусто'
-        self.needStartBios = 'Пусто'
-        self.local = {'F': 'Нет', "T": 'Да'}
+        self.local = {False: 'Нет', True: 'Да'}
         
-    def preview(self): # Загрузка Биоса и переход к загрузке ОС. Настройки: 1 - Принудительное включение настроек биоса, 2 - Проверка доступности выбранного диска
+    def preview(self): 
+        """
+        Загрузка Биоса и переход к загрузке ОС. 
+        Настройки: 1 - Принудительное включение настроек биоса, 
+        2 - Проверка доступности выбранного диска
+        """
         while True:
             clearConsole()
             try:
@@ -41,12 +50,12 @@ class BIOS:
                 time.sleep(1)
                 self.settings()
                 continue
-            if self.needBios() == "T": # Проверка настройки №1
+            if self.needBios() == True: # Проверка настройки №1
                 print("Принудительное включение BIOS...")
                 time.sleep(1)
                 self.settings()
-            elif self.diskIsReady() != False: # Проверка настройки №2
-                print(f"Запуск ОС на диске {self.pointedDisk}")
+            elif self.diskIsReady() != "Пусто": # Проверка настройки №2
+                print(f"Запуск ОС на диске {self.diskIsReady()}")
                 if self.runOS(): # True - выход в настройки, False - прекращение работы
                     print('Выход в меню настроек...')
                     time.sleep(2)
@@ -54,37 +63,45 @@ class BIOS:
                 else:
                     break
             else:
+                time.sleep(2)
                 print("Загрузочный диск не выбран или не найден")
+                print('Выход в меню настроек...')
                 self.settings()
 
-    def settings(self): # Выведение информации настроек и переход к изменению настроек (save_settings) и управлению дисками (disks_settings)
-            while True:
-                clearConsole()
-                print("======== Настройки BIOS ========")
-                print('  Диски  |  Настройка  |  Выход ')
-                print()
-                print(f"Принудительное включение BIOS: {self.local[self.needBios()]}")
-                print(f"Диск для запуска ОС: {self.pointedDisk}")
-                action = ''
-                print('--------------------------------')
-                while action not in ['1', '2', '3']: # Выбор раздела настроек
-                    print('Для переключения между разделами настроек введите номер раздела')
-                    action = input("Введите номер раздела настроек: ").upper()
-                    if action == '1':
-                        self.disks_settings()
-                    
-                    elif action == '2':
-                        self.save_settings()
+    def settings(self): 
+        """
+        Вывод информации настроек и переход к изменению настроек (save_settings) и управлению дисками (disks_settings)
+        """
+        while True:
+            clearConsole()
+            print("======== Настройки BIOS ========")
+            print('  Диски  |  Настройка  |  Выход ')
+            print()
+            print(f"Принудительное включение BIOS: {self.local[self.needBios()]}")
+            print(f"Диск для запуска ОС: {self.diskIsReady()}")
+            action = ''
+            print('--------------------------------')
+            while action not in ['1', '2', '3']: # Выбор раздела настроек
+                print('Для переключения между разделами настроек введите номер раздела')
+                action = input("Введите номер раздела настроек: ").upper()
+                if action == '1':
+                    self.disks_settings()
+                
+                elif action == '2':
+                    self.save_settings()
 
-                    elif action == '3':
-                        return None
+                elif action == '3':
+                    return None
 
-    def save_settings(self): # Режим изменения настроек. Сохраняет изменения в файл bios.txt
+    def save_settings(self): 
+        """
+        Режим изменения настроек. Сохраняет изменения в файл bios.json
+        """
         while True:
             clearConsole()
             print('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')
             print(f"1) Принудительное включение BIOS: {self.local[self.needBios()]}")
-            print(f"2) Диск для запуска ОС: {self.pointedDisk}")
+            print(f"2) Диск для запуска ОС: {self.diskIsReady()}")
             print('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')
             try:
                 print(output)
@@ -102,15 +119,15 @@ class BIOS:
                     action = input("Переключить значение? \"да[д]/нет[н]\": ").upper()
 
                 if action in ['ДА', 'Д', 'Y']:
-                    with open(newPath("/config/bios.txt"), "r+") as save_settings:
-                        save = save_settings.readlines()
+                    with open(newPath("/config/bios.json"), "r+") as save_settings:
+                        bios_config = json.load(save_settings)
                         save_settings.seek(0)
-                        if separateFile(save[0]) == "F":
-                            save[0] = "T\n"
+                        save_settings.truncate(0)
+                        if bios_config["bios_autostart"] == False:
+                            bios_config["bios_autostart"] = True
                         else:
-                            save[0] = "F\n"
-                        save_settings.writelines(save)
-
+                            bios_config["bios_autostart"] = False
+                        json.dump(bios_config, save_settings)
                     output = f'Значение изменено на {self.local[self.needBios()]}'
 
                 elif action in ['НЕТ', 'НЕ', 'Н', 'N']:
@@ -128,19 +145,21 @@ class BIOS:
                         else:
                             action = input("Введите номер диска для загрузки ОС: ").upper()
 
-                    self.pointedDisk = self.workDisks[int(action) - 1]
-                    with open(newPath("/config/bios.txt"), "r+") as save_settings:
-                        save = save_settings.readlines()
+                    with open(newPath("/config/bios.json"), "r+") as save_settings:
+                        save = json.load(save_settings)
+                        save["startup_disk"] = self.workDisks[int(action) - 1]
                         save_settings.seek(0)
-                        save[1] = self.pointedDisk
                         save_settings.truncate(0)
-                        save_settings.writelines(save)
+                        json.dump(save, save_settings)
 
-                    output = f'Значение изменено на {self.pointedDisk}'
+                    output = f'Значение изменено на {self.diskIsReady()}'
                 else:
                     print("Не найдено ни одного диска!")
 
-    def disks_settings(self): # Режим изменения дисков. Создает/отключает/удаляет диски.
+    def disks_settings(self): 
+        """
+        Режим изменения дисков. Создает/отключает/удаляет диски.
+        """
         pathToSystem = f'/disks/'
         while True:
             clearConsole()
@@ -195,11 +214,15 @@ class BIOS:
             print('--------------------------------')
         
     def runOS(self): # Запуск ОС. Возвращает True или False
-        pathToSystem = f'/disks/{self.pointedDisk}/'
+        pathToSystem = f'/disks/{self.diskIsReady()}/'
         sys.path.insert(1, newPath(pathToSystem))
         fileDir = [i for i in os.listdir(newPath(pathToSystem)) if i.endswith('.py')]
         toDel = []
-        for i in fileDir: # Проверка файлов .py на диске. Отсеевает файлы не-загрузчики, оставляет загрузчики. Загрузчиком считается тот файл, в котором есть функция startUp (это функция, которая запускает саму ОС)
+        for i in fileDir: 
+            """
+            Проверка файлов .py на диске. Отсеевает файлы не-загрузчики, оставляет загрузчики. 
+            Загрузчиком считается тот файл, в котором есть функция startUp (это функция, которая запускает саму ОС)
+            """
             try:
                 checking = __import__(i[:-3], globals(), locals(), ['startUp'])
                 if 'startUp' not in dir(checking):
@@ -233,21 +256,18 @@ class BIOS:
         start.startUp()
         return False
 
-    def diskIsReady(self): # Проверка доступности диска, указанного в первой строке bios.txt. Возвращает название диска
-        diskIsReady = open(newPath("/config/bios.txt"), "r")
-        needDisk = diskIsReady.readlines()
-        for i in range(len(self.workDisks)):
-            if separateFile(needDisk[1]) == self.workDisks[i] and separateFile(needDisk[1]) != 'None':
-                self.pointedDisk = self.workDisks[i]
-                return self.pointedDisk
-        return False
-    
-    def needBios(self): # Проверка необходимости включения Биоса, указанного в строке bios.txt. Возвращает F или T (True или False)
-        needBios = open(newPath("/config/bios.txt"), "r")
-        self.needStartBios = needBios.readline()
-        if self.needStartBios == 'None':
-            self.needStartBios = "F"
-        return separateFile(self.needStartBios)
+    def needBios(self): # Проверка необходимости включения Биоса, указанного в строке bios.json. Возвращает F или T (True или False)
+        with open(newPath("/config/bios.json"), "r") as needBios:
+            need = json.load(needBios)
+            return need["bios_autostart"]
+
+    def diskIsReady(self): # Проверка доступности диска, указанного в первой строке bios.json. Возвращает название диска
+        with open(newPath("/config/bios.json"), "r") as needDisk:
+            need = json.load(needDisk)
+            for i in self.workDisks:
+                if need["startup_disk"] == i and need["startup_disk"] != None:
+                    return i
+        return 'Пусто'
 
 def scan_disks():
     workDisks = []     
